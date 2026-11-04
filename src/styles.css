@@ -1,7 +1,8 @@
 @import url("fonts.css");
 
-/* Aurora — строгая вёрстка + стекло в духе macOS: глубокая подложка, прозрачные панели
-   с преломлением у краёв (фильтры строит lib/glass.js), один шрифт, один акцент. */
+/* Aurora — строгая вёрстка + стекло в духе macOS: глубокая подложка, полупрозрачные панели
+   с бликом по кромке, один шрифт, один акцент. Живое размытие фона (backdrop-filter) только
+   у модального окна: под панелями статичная подложка, а размытие на каждой панели тормозит. */
 :root {
   --bg: #01030b;
   --text: #f1f4fb;
@@ -13,7 +14,7 @@
   --red: #ff7a6b;
   --blue: #d9e6ff;
 
-  --glass: rgba(255, 255, 255, .045);
+  --glass: rgba(255, 255, 255, .05);
   --glass-strong: rgba(255, 255, 255, .1);
   --glass-line: rgba(255, 255, 255, .12);
   --sep: rgba(255, 255, 255, .08);
@@ -75,8 +76,6 @@ body.connected .aurora-bg::after { opacity: 1; }
   background: var(--glass);
   border: 1px solid var(--glass-line);
   border-radius: var(--r);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  backdrop-filter: blur(18px) saturate(160%);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 18px 40px rgba(0,0,0,.25);
 }
 /* Кромка с бликом сверху-слева */

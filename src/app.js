@@ -1,6 +1,5 @@
 import { parseSubscription, parseLink, parseUserinfo, parseTitle, hash } from './lib/parser.js';
 import { buildConfig, defaultSettings, API_PORT } from './lib/singbox.js';
-import { initGlass } from './lib/glass.js';
 
 // ---------- Мост к Rust (или заглушка для предпросмотра в браузере) ----------
 const T = window.__TAURI__;
@@ -679,7 +678,6 @@ $('#show-config').onclick = () => {
 };
 
 // ---------- Старт ----------
-initGlass('.sidebar, .card, .glass, .server-list, .modal-box');
 go('home');
 renderAll();
 drawGraph();
