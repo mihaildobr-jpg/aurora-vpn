@@ -3,15 +3,15 @@
 /* Aurora — строгая вёрстка + стекло в духе macOS: глубокая подложка, прозрачные панели
    с преломлением у краёв (фильтры строит lib/glass.js), один шрифт, один акцент. */
 :root {
-  --bg: #07110d;
-  --text: #f1f5f1;
-  --muted: rgba(241, 245, 241, .6);
-  --dim: rgba(241, 245, 241, .36);
-  --accent: #6fe3a5;
-  --accent-ink: #062014;
+  --bg: #060b1a;
+  --text: #f1f4fb;
+  --muted: rgba(241, 244, 251, .6);
+  --dim: rgba(241, 244, 251, .36);
+  --accent: #7ab8ff;
+  --accent-ink: #04122b;
   --amber: #f5c560;
   --red: #ff7a6b;
-  --blue: #9cc9ff;
+  --blue: #d9e6ff;
 
   --glass: rgba(255, 255, 255, .06);
   --glass-strong: rgba(255, 255, 255, .1);
@@ -49,10 +49,10 @@ code { font-family: var(--mono); font-size: 11px; background: var(--fill); paddi
 .aurora-bg {
   position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
   background:
-    radial-gradient(70% 60% at 18% 12%, #1d5a43 0%, transparent 70%),
-    radial-gradient(60% 70% at 92% 88%, #134a52 0%, transparent 70%),
-    radial-gradient(50% 45% at 70% 20%, #23463a 0%, transparent 70%),
-    linear-gradient(160deg, #0c1c16, #06100c 60%, #071512);
+    radial-gradient(70% 60% at 18% 12%, #1d3a7a 0%, transparent 70%),
+    radial-gradient(60% 70% at 92% 88%, #182e66 0%, transparent 70%),
+    radial-gradient(50% 45% at 70% 20%, #2a3470 0%, transparent 70%),
+    linear-gradient(160deg, #0b1532, #060b1c 60%, #081028);
 }
 /* Тонкие диагональные полосы — их и видно сквозь стекло. */
 .aurora-bg::before {
@@ -64,7 +64,7 @@ code { font-family: var(--mono); font-size: 11px; background: var(--fill); paddi
 .aurora-bg i { display: none; }
 .aurora-bg::after {
   content: ""; position: absolute; width: 60vmax; height: 60vmax; left: 30%; top: 15%; border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(111,227,165,.22), transparent);
+  background: radial-gradient(closest-side, rgba(122,184,255,.22), transparent);
   opacity: 0; transition: opacity 1.2s ease;
 }
 body.connected .aurora-bg::after { opacity: 1; }
@@ -155,10 +155,10 @@ label.row { cursor: pointer; }
   height: 34px; padding: 0 12px; border-radius: var(--r-sm); background: rgba(0,0,0,.22); border: 1px solid var(--glass-line);
   outline: none; min-width: 190px; transition: border-color .2s, box-shadow .2s; user-select: text;
 }
-.input:focus { border-color: rgba(111,227,165,.6); box-shadow: 0 0 0 3px rgba(111,227,165,.15); }
+.input:focus { border-color: rgba(122,184,255,.6); box-shadow: 0 0 0 3px rgba(122,184,255,.15); }
 .input.num { min-width: 0; width: 96px; }
 select.input { min-width: 130px; }
-select.input option { background: #10201a; }
+select.input option { background: #101a38; }
 
 .switch { position: relative; flex: none; width: 44px; height: 26px; }
 .switch input { position: absolute; opacity: 0; }
@@ -173,8 +173,8 @@ select.input option { background: #10201a; }
 .seg button.on { background: rgba(255,255,255,.16); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.12); }
 
 .tag { display: inline-block; font-size: 11.5px; font-weight: 500; padding: 2px 9px; border-radius: 999px; background: var(--fill); color: var(--muted); }
-.tag.direct { background: rgba(111,227,165,.15); color: var(--accent); }
-.tag.proxy { background: rgba(156,201,255,.15); color: var(--blue); }
+.tag.direct { background: rgba(122,184,255,.15); color: var(--accent); }
+.tag.proxy { background: rgba(217,230,255,.15); color: var(--blue); }
 .tag.block { background: rgba(255,122,107,.15); color: var(--red); }
 
 .flag { width: 26px; height: 19px; border-radius: 4px; object-fit: cover; flex: none; background: var(--fill); box-shadow: 0 0 0 1px rgba(255,255,255,.1); }
@@ -202,11 +202,11 @@ select.input option { background: #10201a; }
 .power { width: 60px; height: 60px; stroke: var(--muted); stroke-width: 1.8; fill: none; stroke-linecap: round; transition: stroke .4s; }
 .orb:hover .power { stroke: var(--text); }
 body.connected .orb {
-  background: radial-gradient(100% 70% at 50% 0%, rgba(200,255,225,.6), rgba(111,227,165,.38) 55%, rgba(60,170,115,.3));
-  border-color: rgba(160,255,205,.6);
-  box-shadow: inset 0 1px 1px rgba(255,255,255,.4), inset 0 -18px 40px rgba(0,30,15,.3), 0 0 0 10px rgba(111,227,165,.06), 0 24px 70px rgba(111,227,165,.25);
+  background: radial-gradient(100% 70% at 50% 0%, rgba(215,232,255,.6), rgba(122,184,255,.38) 55%, rgba(60,105,215,.3));
+  border-color: rgba(175,212,255,.6);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.4), inset 0 -18px 40px rgba(0,12,40,.3), 0 0 0 10px rgba(122,184,255,.06), 0 24px 70px rgba(122,184,255,.25);
 }
-body.connected .power { stroke: #eafff3; }
+body.connected .power { stroke: #f2f7ff; }
 body.connecting .orb-ring { border-color: rgba(245,197,96,.8) transparent transparent transparent; animation: spin 1s linear infinite; }
 body.error .orb { border-color: rgba(255,122,107,.5); }
 body.error .power { stroke: var(--red); }
@@ -277,7 +277,7 @@ body.error .status { color: var(--red); }
   height: 170px; resize: vertical; background: rgba(0,0,0,.22); border: 1px solid var(--glass-line); border-radius: var(--r-sm);
   padding: 10px 12px; outline: none; font: 400 11.5px/1.7 var(--mono); user-select: text;
 }
-.list-card textarea:focus { border-color: rgba(111,227,165,.6); }
+.list-card textarea:focus { border-color: rgba(122,184,255,.6); }
 
 .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
 .app-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--r-md); }
@@ -294,7 +294,7 @@ body.error .status { color: var(--red); }
 /* ---------- Модальные окна и уведомления ---------- */
 .modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: rgba(3,8,6,.4); animation: rise .2s; }
 .modal[hidden] { display: none; }
-.modal-box { width: min(540px, 92vw); max-height: 82vh; display: flex; flex-direction: column; gap: 14px; padding: 22px; background: rgba(16,32,26,.72); -webkit-backdrop-filter: blur(30px) saturate(160%); backdrop-filter: blur(30px) saturate(160%); }
+.modal-box { width: min(540px, 92vw); max-height: 82vh; display: flex; flex-direction: column; gap: 14px; padding: 22px; background: rgba(14,24,50,.72); -webkit-backdrop-filter: blur(30px) saturate(160%); backdrop-filter: blur(30px) saturate(160%); }
 .modal-box h3 { font-size: 18px; font-weight: 600; }
 .modal-box p { color: var(--muted); font-size: 13px; }
 .modal-box .input { width: 100%; }
@@ -308,7 +308,7 @@ body.error .status { color: var(--red); }
 .proc-list button.picked { color: var(--accent); }
 
 .toasts { position: fixed; right: 22px; bottom: 22px; z-index: 60; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
-.toast { max-width: 420px; padding: 11px 16px; border-radius: var(--r-md); background: rgba(16,32,26,.8); font-size: 13px; animation: rise .2s; }
+.toast { max-width: 420px; padding: 11px 16px; border-radius: var(--r-md); background: rgba(14,24,50,.8); font-size: 13px; animation: rise .2s; }
 .toast.err { box-shadow: inset 3px 0 0 var(--red), 0 12px 30px rgba(0,0,0,.35); }
 .toast.ok { box-shadow: inset 3px 0 0 var(--accent), 0 12px 30px rgba(0,0,0,.35); }
 
