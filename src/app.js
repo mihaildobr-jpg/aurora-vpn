@@ -1,5 +1,6 @@
 import { parseSubscription, parseLink, parseUserinfo, parseTitle, hash } from './lib/parser.js';
 import { buildConfig, defaultSettings, API_PORT } from './lib/singbox.js';
+import { initGlass } from './lib/glass.js';
 
 // ---------- Мост к Rust (или заглушка для предпросмотра в браузере) ----------
 const T = window.__TAURI__;
@@ -92,21 +93,29 @@ $('#modal').addEventListener('mousedown', (e) => { if (e.target.id === 'modal') 
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
 // ---------- Навигация ----------
+const ICONS = {
+  home: '<path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/>',
+  servers: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
+  routing: '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6.5"/>',
+  apps: '<rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/>',
+  logs: '<path d="M5 6h14M5 11h14M5 16h9"/>',
+  settings: '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>',
+};
 const PAGES = [
-  ['home', 'Пульт'], ['servers', 'Серверы'], ['routing', 'Маршрутизация'],
+  ['home', 'Подключение'], ['servers', 'Серверы'], ['routing', 'Маршрутизация'],
   ['apps', 'Приложения'], ['logs', 'Журнал'], ['settings', 'Настройки'],
 ];
-$('#nav').innerHTML = PAGES.map(([id, title], i) =>
-  `<button class="nav-btn" data-page="${id}"><em>${String(i + 1).padStart(2, '0')}</em>${title}</button>`).join('')
+$('#nav').innerHTML = PAGES.map(([id, title]) =>
+  `<button class="nav-btn" data-page="${id}"><svg viewBox="0 0 24 24">${ICONS[id]}</svg>${title}</button>`).join('')
   + '<div class="side-foot" id="side-foot"></div>';
 
 function renderSideFoot() {
   const s = state.settings;
   $('#side-foot').innerHTML = [
-    ['режим', s.mode === 'tun' ? 'tun' : 'прокси'],
-    ['маршрут', s.routing === 'rules' ? 'правила' : 'глобал'],
-    ['рф', s.ruDomains ? 'напрямую' : 'в vpn'],
-    ['порт', s.proxyPort],
+    ['Режим', s.mode === 'tun' ? 'TUN' : 'Прокси'],
+    ['Маршруты', s.routing === 'rules' ? 'По правилам' : 'Глобально'],
+    ['Сайты РФ', s.ruDomains ? 'Напрямую' : 'Через VPN'],
+    ['Порт', s.proxyPort],
   ].map(([k, v]) => `<span>${k}<b>${esc(v)}</b></span>`).join('');
 }
 
@@ -608,32 +617,27 @@ function drawGraph() {
   g.clearRect(0, 0, w, h);
   const css = getComputedStyle(document.documentElement);
   const col = (v) => css.getPropertyValue(v).trim();
-  // Разметка: три горизонтали пунктиром.
-  g.strokeStyle = col('--line');
-  g.setLineDash([2, 3]);
-  for (let k = 1; k <= 3; k++) {
-    const yy = Math.round((h / 4) * k) + 0.5;
-    g.beginPath(); g.moveTo(0, yy); g.lineTo(w, yy); g.stroke();
+  // Две тонкие сглаженные линии с лёгкой заливкой.
+  const max = Math.max(32 * 1024, ...history.down, ...history.up) * 1.15;
+  for (const [data, color] of [[history.up, col('--accent')], [history.down, col('--blue')]]) {
+    const step = w / (data.length - 1);
+    const y = (v) => h - 3 - (v / max) * (h - 8);
+    g.beginPath();
+    g.moveTo(0, y(data[0]));
+    for (let i = 1; i < data.length; i++) {
+      const x0 = (i - 1) * step, x1 = i * step;
+      g.bezierCurveTo(x0 + step / 2, y(data[i - 1]), x1 - step / 2, y(data[i]), x1, y(data[i]));
+    }
+    g.strokeStyle = color;
+    g.lineWidth = 1.6;
+    g.stroke();
+    g.lineTo(w, h); g.lineTo(0, h); g.closePath();
+    const grad = g.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, color + '33');
+    grad.addColorStop(1, color + '00');
+    g.fillStyle = grad;
+    g.fill();
   }
-  g.setLineDash([]);
-  // Столбики: загрузка вверх от центра, отдача вниз.
-  const max = Math.max(32 * 1024, ...history.down, ...history.up);
-  const n = history.down.length;
-  const step = w / n;
-  const bw = Math.max(1, step - 2);
-  const mid = Math.round(h * 0.62);
-  for (let i = 0; i < n; i++) {
-    const x = i * step + 1;
-    const d = (history.down[i] / max) * (mid - 2);
-    const u = (history.up[i] / max) * (h - mid - 2);
-    const fresh = i === n - 1;
-    g.fillStyle = fresh ? col('--text') : col('--cyan');
-    if (d > 0.5) g.fillRect(x, mid - d, bw, d);
-    g.fillStyle = fresh ? col('--text') : col('--sig');
-    if (u > 0.5) g.fillRect(x, mid + 1, bw, u);
-  }
-  g.fillStyle = col('--line-hi');
-  g.fillRect(0, mid, w, 1);
 }
 window.addEventListener('resize', drawGraph);
 
@@ -675,6 +679,7 @@ $('#show-config').onclick = () => {
 };
 
 // ---------- Старт ----------
+initGlass('.sidebar, .card, .glass, .server-list, .modal-box');
 go('home');
 renderAll();
 drawGraph();

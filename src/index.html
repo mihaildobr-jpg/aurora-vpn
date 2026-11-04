@@ -9,6 +9,8 @@
 <body>
   <div class="aurora-bg"><i></i><i></i><i></i></div>
 
+  <svg id="glass-defs" width="0" height="0" style="position:absolute" aria-hidden="true"></svg>
+
   <div class="app">
     <header class="titlebar" data-tauri-drag-region>
       <div class="brand" data-tauri-drag-region>
@@ -26,7 +28,7 @@
       <!-- Главная -->
       <section class="page" id="page-home">
         <div class="home">
-          <div class="orb-wrap">
+          <div class="orb-wrap glass">
             <div class="dial">
               <svg class="ticks" id="ticks" viewBox="0 0 250 250"></svg>
               <button class="orb" id="connect" title="Подключить / отключить">
