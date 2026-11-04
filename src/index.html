@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aurora VPN</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="aurora-bg"><i></i><i></i><i></i></div>
+
+  <div class="app">
+    <header class="titlebar" data-tauri-drag-region>
+      <div class="brand" data-tauri-drag-region>
+        <span class="logo"></span><span data-tauri-drag-region>Aurora</span>
+      </div>
+      <div class="win-btns">
+        <button id="win-min" title="Свернуть"><svg viewBox="0 0 12 12"><path d="M2 6h8"/></svg></button>
+        <button id="win-close" title="Скрыть в трей"><svg viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>
+      </div>
+    </header>
+
+    <nav class="sidebar" id="nav"></nav>
+
+    <main>
+      <!-- Главная -->
+      <section class="page" id="page-home">
+        <div class="home">
+          <div class="orb-wrap">
+            <button class="orb" id="connect">
+              <span class="orb-ring"></span>
+              <svg viewBox="0 0 24 24" class="power"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg>
+            </button>
+            <div class="status" id="status-text">Не подключено</div>
+            <div class="status-sub" id="status-sub">Нажмите, чтобы подключиться</div>
+            <div class="seg" id="home-mode">
+              <button data-v="tun">TUN · весь трафик</button>
+              <button data-v="proxy">Системный прокси</button>
+            </div>
+          </div>
+
+          <div class="home-side">
+            <div class="card server-card" id="home-server"></div>
+
+            <div class="stats">
+              <div class="card stat"><span class="dot down"></span><div><small>Загрузка</small><b id="st-down">0 Б/с</b><em id="st-down-total">0 Б</em></div></div>
+              <div class="card stat"><span class="dot up"></span><div><small>Отдача</small><b id="st-up">0 Б/с</b><em id="st-up-total">0 Б</em></div></div>
+            </div>
+
+            <div class="card graph-card">
+              <div class="graph-head"><small>Скорость</small><small id="st-conns">0 соединений</small></div>
+              <canvas id="graph"></canvas>
+            </div>
+
+            <div class="card quick">
+              <label class="row"><span><b>Российские сайты мимо VPN</b><small>.ru, .рф, .su и сервисы РФ напрямую</small></span><span class="switch"><input type="checkbox" id="q-ru"><i></i></span></label>
+              <div class="row clickable" data-goto="apps"><span><b>Приложения</b><small id="q-apps">Все через VPN</small></span><span class="chev">›</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Серверы -->
+      <section class="page" id="page-servers">
+        <div class="page-head">
+          <h1>Серверы</h1>
+          <div class="actions">
+            <button class="btn ghost" id="ping-all">Проверить пинг</button>
+            <button class="btn ghost" id="update-subs">Обновить</button>
+            <button class="btn" id="add-sub">+ Добавить</button>
+          </div>
+        </div>
+        <div id="subs"></div>
+        <div class="server-list" id="server-list"></div>
+      </section>
+
+      <!-- Маршрутизация -->
+      <section class="page" id="page-routing">
+        <div class="page-head"><h1>Маршрутизация</h1></div>
+        <div class="card">
+          <div class="row"><span><b>Режим</b><small>По правилам — работают исключения ниже. Глобальный — весь трафик в туннель.</small></span>
+            <div class="seg small" id="routing-mode"><button data-v="rules">По правилам</button><button data-v="global">Глобальный</button></div>
+          </div>
+        </div>
+        <h2>Россия напрямую</h2>
+        <div class="card">
+          <label class="row"><span><b>Домены .ru .рф .su .moscow</b><small>Все сайты в российских доменных зонах идут мимо туннеля</small></span><span class="switch"><input type="checkbox" data-setting="ruDomains"><i></i></span></label>
+          <label class="row"><span><b>Российские сервисы на других доменах</b><small>yandex.com, vk.com, ok.ru, банки, маркетплейсы и т.д. (geosite-category-ru)</small></span><span class="switch"><input type="checkbox" data-setting="ruGeosite"><i></i></span></label>
+          <label class="row"><span><b>Российские IP-адреса</b><small>Всё, что размещено в российских сетях (geoip-ru)</small></span><span class="switch"><input type="checkbox" data-setting="ruGeoip"><i></i></span></label>
+        </div>
+        <h2>Свои правила</h2>
+        <p class="hint">По одному на строку: <code>site.com</code> — домен с поддоменами, <code>full:a.site.com</code> — точный, <code>keyword:bank</code>, <code>regex:…</code>, <code>10.0.0.0/8</code> — IP/подсеть.</p>
+        <div class="lists">
+          <div class="card list-card"><div class="list-title"><span class="tag direct">Напрямую</span></div><textarea data-setting="directList" spellcheck="false" placeholder="example.org&#10;keyword:bank"></textarea></div>
+          <div class="card list-card"><div class="list-title"><span class="tag proxy">Через VPN</span></div><textarea data-setting="proxyList" spellcheck="false" placeholder="2ip.ru&#10;full:api.site.ru"></textarea></div>
+          <div class="card list-card"><div class="list-title"><span class="tag block">Блокировать</span></div><textarea data-setting="blockList" spellcheck="false" placeholder="ads.example.com"></textarea></div>
+        </div>
+      </section>
+
+      <!-- Приложения -->
+      <section class="page" id="page-apps">
+        <div class="page-head"><h1>Приложения</h1></div>
+        <div class="card">
+          <div class="row"><span><b>Раздельное туннелирование</b><small id="apps-hint"></small></span>
+            <div class="seg small" id="app-mode"><button data-v="off">Выкл</button><button data-v="bypass">Мимо VPN</button><button data-v="only">Только через VPN</button></div>
+          </div>
+        </div>
+        <p class="hint" id="apps-warn">Работает в режиме TUN. В режиме системного прокси учитываются только программы, которые используют системный прокси.</p>
+        <div class="page-head sub"><h2>Выбранные программы</h2>
+          <div class="actions"><button class="btn" id="add-app">+ Добавить программу</button></div>
+        </div>
+        <div class="apps" id="app-list"></div>
+      </section>
+
+      <!-- Логи -->
+      <section class="page" id="page-logs">
+        <div class="page-head"><h1>Журнал</h1>
+          <div class="actions">
+            <input class="input" id="log-filter" placeholder="Фильтр" />
+            <button class="btn ghost" id="show-config">Конфиг</button>
+            <button class="btn ghost" id="copy-logs">Копировать</button>
+            <button class="btn ghost" id="clear-logs">Очистить</button>
+          </div>
+        </div>
+        <pre class="card logs" id="logs"></pre>
+      </section>
+
+      <!-- Настройки -->
+      <section class="page" id="page-settings">
+        <div class="page-head"><h1>Настройки</h1></div>
+        <h2>Запуск</h2>
+        <div class="card">
+          <label class="row"><span><b>Запускать вместе с Windows</b><small>Свёрнуто в трей, через планировщик задач (с правами администратора)</small></span><span class="switch"><input type="checkbox" id="set-autostart"><i></i></span></label>
+          <label class="row"><span><b>Подключаться при запуске</b><small>К последнему выбранному серверу</small></span><span class="switch"><input type="checkbox" data-setting="autoConnect"><i></i></span></label>
+        </div>
+        <h2>Туннель</h2>
+        <div class="card">
+          <div class="row"><span><b>Режим подключения</b><small>TUN перехватывает весь трафик системы, прокси — только программы, которые его используют</small></span>
+            <div class="seg small" id="set-mode"><button data-v="tun">TUN</button><button data-v="proxy">Прокси</button></div></div>
+          <div class="row"><span><b>Стек TUN</b><small>mixed — оптимально, gvisor — если есть проблемы совместимости</small></span>
+            <select class="input" data-setting="stack"><option value="mixed">mixed</option><option value="system">system</option><option value="gvisor">gvisor</option></select></div>
+          <div class="row"><span><b>MTU</b><small>Уменьшите до 1400, если сайты грузятся частично</small></span><input class="input num" type="number" data-setting="mtu" /></div>
+          <label class="row"><span><b>IPv6</b><small>Пропускать IPv6 через туннель</small></span><span class="switch"><input type="checkbox" data-setting="ipv6"><i></i></span></label>
+          <div class="row"><span><b>Локальный прокси</b><small>HTTP/SOCKS5 на 127.0.0.1 — доступен в обоих режимах</small></span><input class="input num" type="number" data-setting="proxyPort" /></div>
+        </div>
+        <h2>DNS</h2>
+        <div class="card">
+          <div class="row"><span><b>DNS через VPN</b><small>DNS-over-HTTPS через туннель</small></span><input class="input" data-setting="dnsRemote" /></div>
+          <div class="row"><span><b>DNS напрямую</b><small>Для российских сайтов и исключённых программ</small></span><input class="input" data-setting="dnsDirect" /></div>
+        </div>
+        <h2>Прочее</h2>
+        <div class="card">
+          <div class="row"><span><b>Уровень журнала</b></span>
+            <select class="input" data-setting="logLevel"><option>error</option><option>warn</option><option>info</option><option>debug</option></select></div>
+          <div class="row"><span><b>Aurora VPN 1.0</b><small id="about-core">Ядро sing-box</small></span><button class="btn ghost" id="quit">Выйти из программы</button></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="modal" hidden><div class="modal-box" id="modal-box"></div></div>
+  <div class="toasts" id="toasts"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
