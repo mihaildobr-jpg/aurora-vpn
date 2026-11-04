@@ -12,7 +12,7 @@
   <div class="app">
     <header class="titlebar" data-tauri-drag-region>
       <div class="brand" data-tauri-drag-region>
-        <span class="logo"></span><span data-tauri-drag-region>Aurora</span>
+        <span class="logo"></span><span data-tauri-drag-region>Aurora<b>/VPN</b></span>
       </div>
       <div class="win-btns">
         <button id="win-min" title="Свернуть"><svg viewBox="0 0 12 12"><path d="M2 6h8"/></svg></button>
@@ -27,10 +27,13 @@
       <section class="page" id="page-home">
         <div class="home">
           <div class="orb-wrap">
-            <button class="orb" id="connect">
-              <span class="orb-ring"></span>
-              <svg viewBox="0 0 24 24" class="power"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg>
-            </button>
+            <div class="dial">
+              <svg class="ticks" id="ticks" viewBox="0 0 250 250"></svg>
+              <button class="orb" id="connect" title="Подключить / отключить">
+                <span class="orb-ring"></span>
+                <svg viewBox="0 0 24 24" class="power"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg>
+              </button>
+            </div>
             <div class="status" id="status-text">Не подключено</div>
             <div class="status-sub" id="status-sub">Нажмите, чтобы подключиться</div>
             <div class="seg" id="home-mode">

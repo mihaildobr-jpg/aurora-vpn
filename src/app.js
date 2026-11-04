@@ -92,20 +92,45 @@ $('#modal').addEventListener('mousedown', (e) => { if (e.target.id === 'modal') 
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
 // ---------- Навигация ----------
-const ICONS = {
-  home: '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>',
-  servers: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
-  routing: '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6.5"/>',
-  apps: '<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
-  logs: '<path d="M4 5h16M4 10h16M4 15h10M4 20h7"/>',
-  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
-};
 const PAGES = [
-  ['home', 'Главная'], ['servers', 'Серверы'], ['routing', 'Маршрутизация'],
+  ['home', 'Пульт'], ['servers', 'Серверы'], ['routing', 'Маршрутизация'],
   ['apps', 'Приложения'], ['logs', 'Журнал'], ['settings', 'Настройки'],
 ];
-$('#nav').innerHTML = PAGES.map(([id, tip], i) =>
-  `${i === 4 ? '<div style="flex:1"></div>' : ''}<button class="nav-btn" data-page="${id}" data-tip="${tip}"><svg viewBox="0 0 24 24">${ICONS[id]}</svg></button>`).join('');
+$('#nav').innerHTML = PAGES.map(([id, title], i) =>
+  `<button class="nav-btn" data-page="${id}"><em>${String(i + 1).padStart(2, '0')}</em>${title}</button>`).join('')
+  + '<div class="side-foot" id="side-foot"></div>';
+
+function renderSideFoot() {
+  const s = state.settings;
+  $('#side-foot').innerHTML = [
+    ['режим', s.mode === 'tun' ? 'tun' : 'прокси'],
+    ['маршрут', s.routing === 'rules' ? 'правила' : 'глобал'],
+    ['рф', s.ruDomains ? 'напрямую' : 'в vpn'],
+    ['порт', s.proxyPort],
+  ].map(([k, v]) => `<span>${k}<b>${esc(v)}</b></span>`).join('');
+}
+
+// Шкала вокруг кнопки: 60 делений, каждое пятое — длинное.
+$('#ticks').innerHTML = Array.from({ length: 60 }, (_, i) => {
+  const a = (i / 60) * Math.PI * 2 - Math.PI / 2;
+  const major = i % 5 === 0;
+  const x = (r) => (125 + Math.cos(a) * r).toFixed(1);
+  const y = (r) => (125 + Math.sin(a) * r).toFixed(1);
+  const r2 = major ? 106 : 113;
+  return `<line class="${major ? 'major' : ''}" x1="${x(124)}" y1="${y(124)}" x2="${x(r2)}" y2="${y(r2)}" />`;
+}).join('');
+let sweep;
+function animateTicks(on) {
+  clearInterval(sweep);
+  const lines = $$('#ticks line');
+  lines.forEach((l) => l.classList.remove('lit'));
+  if (!on) return;
+  let i = 0;
+  sweep = setInterval(() => {
+    lines.forEach((l, k) => l.classList.toggle('lit', (i - k + 60) % 60 < 12));
+    i = (i + 1) % 60;
+  }, 30);
+}
 
 function go(page) {
   $$('.nav-btn').forEach((b) => b.classList.toggle('active', b.dataset.page === page));
@@ -210,7 +235,12 @@ function renderHome() {
     : s.appMode === 'bypass' ? `${n} ${plural(n, 'программа', 'программы', 'программ')} мимо VPN`
       : `Только ${n} ${plural(n, 'программа', 'программы', 'программ')} через VPN`;
 
-  document.body.className = status === 'on' ? 'connected' : status;
+  const cls = status === 'on' ? 'connected' : status;
+  if (document.body.className !== cls) {
+    document.body.className = cls;
+    animateTicks(status === 'connecting');
+  }
+  renderSideFoot();
   const text = { off: 'Не подключено', connecting: 'Подключение…', on: 'Защищено', error: 'Ошибка' }[status];
   $('#status-text').textContent = text;
   if (status !== 'on') {
@@ -576,26 +606,32 @@ function drawGraph() {
   const g = c.getContext('2d');
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
   g.clearRect(0, 0, w, h);
-  const max = Math.max(32 * 1024, ...history.down, ...history.up) * 1.15;
-  for (const [data, color] of [[history.up, '139,108,255'], [history.down, '34,211,238']]) {
-    const step = w / (data.length - 1);
-    const y = (v) => h - 4 - (v / max) * (h - 10);
-    g.beginPath();
-    g.moveTo(0, y(data[0]));
-    for (let i = 1; i < data.length; i++) {
-      const x0 = (i - 1) * step, x1 = i * step;
-      g.bezierCurveTo(x0 + step / 2, y(data[i - 1]), x1 - step / 2, y(data[i]), x1, y(data[i]));
-    }
-    g.strokeStyle = `rgb(${color})`;
-    g.lineWidth = 2;
-    g.stroke();
-    g.lineTo(w, h); g.lineTo(0, h); g.closePath();
-    const grad = g.createLinearGradient(0, 0, 0, h);
-    grad.addColorStop(0, `rgba(${color},.28)`);
-    grad.addColorStop(1, `rgba(${color},0)`);
-    g.fillStyle = grad;
-    g.fill();
+  // Разметка: три горизонтали пунктиром.
+  g.strokeStyle = '#2a2b24';
+  g.setLineDash([2, 3]);
+  for (let k = 1; k <= 3; k++) {
+    const yy = Math.round((h / 4) * k) + 0.5;
+    g.beginPath(); g.moveTo(0, yy); g.lineTo(w, yy); g.stroke();
   }
+  g.setLineDash([]);
+  // Столбики: загрузка вверх от центра, отдача вниз.
+  const max = Math.max(32 * 1024, ...history.down, ...history.up);
+  const n = history.down.length;
+  const step = w / n;
+  const bw = Math.max(1, step - 2);
+  const mid = Math.round(h * 0.62);
+  for (let i = 0; i < n; i++) {
+    const x = i * step + 1;
+    const d = (history.down[i] / max) * (mid - 2);
+    const u = (history.up[i] / max) * (h - mid - 2);
+    const fresh = i === n - 1;
+    g.fillStyle = fresh ? '#ebe8dc' : '#7fd8ff';
+    if (d > 0.5) g.fillRect(x, mid - d, bw, d);
+    g.fillStyle = fresh ? '#ebe8dc' : '#d7ff3a';
+    if (u > 0.5) g.fillRect(x, mid + 1, bw, u);
+  }
+  g.fillStyle = '#3a3b32';
+  g.fillRect(0, mid, w, 1);
 }
 window.addEventListener('resize', drawGraph);
 
