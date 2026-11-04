@@ -12,6 +12,8 @@ env:
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: write # для публикации релиза по тегу v*
     steps:
       - uses: actions/checkout@v5
 
