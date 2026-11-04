@@ -606,8 +606,10 @@ function drawGraph() {
   const g = c.getContext('2d');
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
   g.clearRect(0, 0, w, h);
+  const css = getComputedStyle(document.documentElement);
+  const col = (v) => css.getPropertyValue(v).trim();
   // Разметка: три горизонтали пунктиром.
-  g.strokeStyle = '#2a2b24';
+  g.strokeStyle = col('--line');
   g.setLineDash([2, 3]);
   for (let k = 1; k <= 3; k++) {
     const yy = Math.round((h / 4) * k) + 0.5;
@@ -625,12 +627,12 @@ function drawGraph() {
     const d = (history.down[i] / max) * (mid - 2);
     const u = (history.up[i] / max) * (h - mid - 2);
     const fresh = i === n - 1;
-    g.fillStyle = fresh ? '#ebe8dc' : '#7fd8ff';
+    g.fillStyle = fresh ? col('--text') : col('--cyan');
     if (d > 0.5) g.fillRect(x, mid - d, bw, d);
-    g.fillStyle = fresh ? '#ebe8dc' : '#d7ff3a';
+    g.fillStyle = fresh ? col('--text') : col('--sig');
     if (u > 0.5) g.fillRect(x, mid + 1, bw, u);
   }
-  g.fillStyle = '#3a3b32';
+  g.fillStyle = col('--line-hi');
   g.fillRect(0, mid, w, 1);
 }
 window.addEventListener('resize', drawGraph);

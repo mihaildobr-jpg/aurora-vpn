@@ -1,20 +1,20 @@
 @import url("fonts.css");
 
-/* Aurora — «приборная панель»: тёплый графит, разметка-волосок, один сигнальный цвет. */
+/* Aurora — «приборная панель»: хвойный лес, разметка-волосок, один сигнальный цвет. */
 :root {
-  --bg: #0d0e0b;
-  --bg2: #121310;
-  --panel: #151612;
-  --panel-hi: #1c1d18;
-  --line: #2a2b24;
-  --line-hi: #3a3b32;
-  --text: #ebe8dc;
-  --muted: #8b897b;
-  --dim: #5c5b51;
-  --sig: #d7ff3a; /* подключено */
-  --amber: #ffb020; /* подключение */
-  --red: #ff5533; /* ошибка */
-  --cyan: #7fd8ff; /* загрузка */
+  --bg: #0b1410;
+  --bg2: #0f1b15;
+  --panel: #111f18;
+  --panel-hi: #172a21;
+  --line: #21362b;
+  --line-hi: #2f4a3c;
+  --text: #ece6d6;
+  --muted: #93a89b;
+  --dim: #5b7366;
+  --sig: #7cf0b0; /* подключено */
+  --amber: #f2c14e; /* подключение */
+  --red: #ff6b5b; /* ошибка */
+  --cyan: #a9d8ff; /* загрузка */
   --display: "Unbounded", "Segoe UI", sans-serif;
   --sans: "Onest", "Segoe UI", system-ui, sans-serif;
   --mono: "Martian Mono", "Cascadia Code", Consolas, monospace;
@@ -108,7 +108,7 @@ label.row { cursor: pointer; }
 
 .btn {
   height: 34px; padding: 0 16px; font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: .8px;
-  background: var(--sig); color: #0d0e0b; border: 1px solid var(--sig); transition: filter .15s, transform .1s; white-space: nowrap;
+  background: var(--sig); color: var(--bg); border: 1px solid var(--sig); transition: filter .15s, transform .1s; white-space: nowrap;
 }
 .btn:hover { filter: brightness(1.1); }
 .btn:active { transform: translateY(1px); }
@@ -131,7 +131,7 @@ select.input option { background: var(--panel); }
 .switch i { position: absolute; inset: 0; border: 1px solid var(--line-hi); background: var(--bg); transition: .2s; }
 .switch i::after { content: ""; position: absolute; left: 3px; top: 3px; width: 14px; height: 14px; background: var(--dim); transition: .2s cubic-bezier(.3,.7,.3,1); }
 .switch input:checked + i { border-color: var(--sig); }
-.switch input:checked + i::after { transform: translateX(24px); background: var(--sig); box-shadow: 0 0 8px rgba(215,255,58,.5); }
+.switch input:checked + i::after { transform: translateX(24px); background: var(--sig); box-shadow: 0 0 8px rgba(124,240,176,.5); }
 
 .seg { display: inline-flex; border: 1px solid var(--line-hi); }
 .seg button { padding: 7px 14px; font: 500 10.5px var(--mono); text-transform: uppercase; letter-spacing: .6px; color: var(--muted); white-space: nowrap; transition: .15s; }
@@ -161,7 +161,7 @@ select.input option { background: var(--panel); }
 .dial .ticks line { stroke: var(--line-hi); stroke-width: 2; transition: stroke .25s; }
 .dial .ticks line.major { stroke: var(--dim); }
 body.connected .dial .ticks line { stroke: var(--sig); }
-body.connected .dial .ticks line:nth-child(3n) { stroke: rgba(215,255,58,.35); }
+body.connected .dial .ticks line:nth-child(3n) { stroke: rgba(124,240,176,.35); }
 body.connecting .dial .ticks line.lit { stroke: var(--amber); }
 body.error .dial .ticks line.major { stroke: var(--red); }
 
@@ -174,7 +174,7 @@ body.error .dial .ticks line.major { stroke: var(--red); }
 .orb-ring { position: absolute; inset: 10px; border-radius: 50%; border: 1px dashed var(--line); }
 .power { width: 54px; height: 54px; stroke: var(--muted); stroke-width: 1.6; fill: none; stroke-linecap: square; transition: stroke .3s; }
 .orb:hover .power { stroke: var(--text); }
-body.connected .orb { border-color: var(--sig); box-shadow: 0 0 0 6px rgba(215,255,58,.06), 0 0 60px rgba(215,255,58,.12); }
+body.connected .orb { border-color: var(--sig); box-shadow: 0 0 0 6px rgba(124,240,176,.06), 0 0 60px rgba(124,240,176,.12); }
 body.connected .power { stroke: var(--sig); }
 body.connecting .orb-ring { border-color: var(--amber); animation: spin 2.4s linear infinite; }
 body.error .orb { border-color: var(--red); }
@@ -269,7 +269,7 @@ body.error .status { color: var(--red); }
 .logs .e { color: var(--red); } .logs .w { color: var(--amber); } .logs .d { color: var(--dim); }
 
 /* ---------- Модальные окна и уведомления ---------- */
-.modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: rgba(8,9,6,.75); animation: rise .2s; }
+.modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: rgba(5,10,8,.78); animation: rise .2s; }
 .modal[hidden] { display: none; }
 .modal-box { width: min(560px, 92vw); max-height: 82vh; display: flex; flex-direction: column; gap: 14px; padding: 24px; background: var(--panel); border: 1px solid var(--line-hi); box-shadow: 12px 12px 0 rgba(0,0,0,.5); }
 .modal-box h3 { font: 700 18px var(--display); text-transform: uppercase; }
